@@ -1,5 +1,5 @@
 import puppeteer, { Browser, Page } from "puppeteer";
-import { readFile } from "fs/promises";
+import { mkdir, readFile } from "fs/promises";
 import path from "path";
 import os from "os";
 
@@ -35,7 +35,19 @@ function getEdgeExecutablePath() {
   return "/usr/bin/microsoft-edge";
 }
 
+function shouldRunHeadless() {
+  return process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+}
+
 function getNoodleProfilePath() {
+  if (process.env.NOODLE_PROFILE_PATH) {
+    return path.resolve(process.env.NOODLE_PROFILE_PATH);
+  }
+
+  if (shouldRunHeadless()) {
+    return path.join(os.tmpdir(), "walter-ai-puppeteer-profile");
+  }
+
   return path.resolve("./puppeteer_edge_data");
 }
 
@@ -115,28 +127,43 @@ async function connectToExistingNoodleBrowser(profilePath: string) {
 
 async function launchNoodleBrowser() {
   const profilePath = getNoodleProfilePath();
+  await mkdir(profilePath, { recursive: true });
+
   const existingBrowser = await connectToExistingNoodleBrowser(profilePath);
 
   if (existingBrowser) {
     return existingBrowser;
   }
 
-  console.log("[Noodle Browser] Launching persistent Edge browser...");
+  const runHeadless = shouldRunHeadless();
 
-  const edgePath = getEdgeExecutablePath();
+  console.log(
+    `[Noodle Browser] Launching persistent ${
+      runHeadless ? "headless Chromium" : "Edge"
+    } browser...`
+  );
 
   try {
     const browser = await puppeteer.launch({
-      headless: false,
-      executablePath: edgePath,
+      headless: runHeadless,
+      ...(runHeadless
+        ? {}
+        : {
+            executablePath: getEdgeExecutablePath(),
+          }),
       userDataDir: profilePath,
-      defaultViewport: null,
+      defaultViewport: runHeadless
+        ? {
+            width: 1400,
+            height: 900,
+          }
+        : null,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
-        "--start-maximized",
         "--window-size=1400,900",
         "--disable-features=Translate",
+        ...(runHeadless ? [] : ["--start-maximized"]),
       ],
     });
 

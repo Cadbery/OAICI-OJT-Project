@@ -25,6 +25,7 @@
 *.pem
 /puppeteer_edge_data/
 /puppeteer_user_data/
+/.cache/
 
 # debug
 npm-debug.log*
