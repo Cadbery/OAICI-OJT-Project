@@ -56,27 +56,44 @@ Clone the repository:
 ```bash
 git clone <repository-url>
 cd agentic-tutor-ui
+```
 
 Install dependencies:
+
+```bash
 npm install
+```
 
 ## Environment Setup
 
 Create a .env.local file in the project root and configure the required environment variables.
-Example:
+
+```bash
 AUTH_SECRET=your_auth_secret
 AUTH_EMAIL=your_email
 AUTH_PASSWORD=your_password
+```
+
+
 If the project uses a local account creation script, create a user account with:
+
+```bash
 npm run auth:create-user -- "email@example.com" "password"
+```
 
 ## Running the Project
 
 Start the development server:
+
+```bash
 npm run dev
+```
 
 Open the application in the browser:
+
+```bash
 http://localhost:3000
+```
 
 ## Important Notes
 
@@ -86,10 +103,16 @@ Because Noodle Factory uses Microsoft login, deploying the full automation workf
 ## Build
 
 To create a production build:
+
+```bash
 npm run build
+```
 
 To start the production server:
+
+```bash
 npm run start
+```
 
 ## Project Purpose
 
@@ -98,4 +121,3 @@ The purpose of this project is to improve the learning workflow of students by p
 ## Developer
 
 Developed as part of an OJT project focused on enhancing the Walter AI Tutor user experience.
-```
